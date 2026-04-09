@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acciones Correctivas y de Mejora</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #004481;
+      --secondary: #f4f7fb;
+      --text: #24303f;
+      --border: #d9e2ec;
+      --success: #1f8f4d;
+      --danger: #c0392b;
+      --muted: #6b7785;
+      --white: #ffffff;
+      --soft-blue: #eaf3fb;
+      --soft-green: #edf8f2;
+      --soft-yellow: #fff3cd;
+      --soft-red: #f8d7da;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 18px;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      background: #eaf0f6;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 12px 32px rgba(8, 42, 79, 0.12);
+      padding: 28px;
+    }
+
+    h1 {
+      margin: 0;
+      text-align: center;
+      color: var(--primary);
+      font-size: 1.82rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      margin: 8px 0 24px;
+      font-size: 0.98rem;
+    }
+
+    fieldset {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin: 0 0 22px;
+      background: var(--secondary);
+    }
+
+    legend {
+      padding: 0 10px;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .form-grid, .form-grid-2, .form-grid-3, .form-grid-4 {
+      display: grid;
+      gap: 16px;
+    }
+
+    .form-grid, .form-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .form-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .form-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .full-width { grid-column: 1 / -1; }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    label {
+      font-size: 0.92rem;
+      font-weight: 650;
+      margin-bottom: 6px;
+      color: #334e68;
+    }
+
+    input, select, textarea, button {
+      font: inherit;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #c8d4e3;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid rgba(0, 68, 129, 0.14);
+      border-color: var(--primary);
+    }
+
+    .notice {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      line-height: 1.55;
+    }
+
+    .hint {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .metric-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .metric-card .label {
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .chip-blue { background: var(--soft-blue); color: #1f4d74; }
+    .chip-green { background: var(--soft-green); color: #22633d; }
+    .chip-yellow { background: var(--soft-yellow); color: #735300; }
+    .chip-red { background: var(--soft-red); color: #721c24; }
+    .chip-gray { background: #eef2f7; color: #475569; }
+
+    .table-responsive {
+      overflow-x: auto;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+    }
+
+    th, td {
+      border-bottom: 1px solid #e4ebf2;
+      padding: 10px;
+      vertical-align: top;
+      background: #fff;
+    }
+
+    th {
+      background: #dfeaf4;
+      color: #17324d;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary, .btn-secondary, .btn-danger {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform .12s ease, opacity .12s ease;
+    }
+
+    .btn-primary:hover, .btn-secondary:hover, .btn-danger:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary { background: var(--success); color: #fff; }
+    .btn-secondary { background: var(--primary); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+
+    .btn-full {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.04rem;
+    }
+
+    .firmas-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .firma-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      max-width: 520px;
+    }
+
+    .firma-pad {
+      width: 100%;
+      height: 180px;
+      border: 2px dashed #98b2ca;
+      border-radius: 12px;
+      background: #fff;
+      touch-action: none;
+      cursor: crosshair;
+      display: block;
+    }
+
+    .firma-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .firma-note {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .form-grid,
+      .form-grid-2,
+      .form-grid-3,
+      .form-grid-4,
+      .summary-grid,
+      .firmas-grid {
+        grid-template-columns: 1fr;
+      }
+      .container { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ACCIONES CORRECTIVAS Y DE MEJORA</h1>
+    <div class="subtitle">Formato web para documentar acciones correctivas y acciones de mejora</div>
+
+    <form id="formAcciones">
+      <fieldset>
+        <legend>Datos del documento</legend>
+        <div class="form-grid-4">
+          <div class="form-group">
+            <label for="codigoDocumento">Código</label>
+            <input type="text" id="codigoDocumento" value="SG-RE-010" readonly />
+          </div>
+          <div class="form-group">
+            <label for="versionDocumento">Versión</label>
+            <input type="text" id="versionDocumento" value="3" readonly />
+          </div>
+          <div class="form-group">
+            <label for="fechaActualizacion">Fecha de actualización</label>
+            <input type="text" id="fechaActualizacion" value="15/08/2025" readonly />
+          </div>
+          <div class="form-group">
+            <label for="procesoDocumento">Proceso</label>
+            <input type="text" id="procesoDocumento" value="Sistema de gestión" />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Instrucciones</legend>
+        <div class="notice">
+          Registre aquí las <strong>acciones correctivas y de mejora</strong> derivadas de una no conformidad real, una situación potencial o una oportunidad de mejora. Este formato permite documentar el análisis de causa, el plan de acción, la verificación del cumplimiento, los resultados obtenidos y la evaluación de eficacia.
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Resumen visual</legend>
+        <div class="summary-grid">
+          <div class="metric-card">
+            <div class="label">Tipo de acción</div>
+            <div id="chipTipoAccion" class="chip chip-gray">Sin definir</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">Eficacia</div>
+            <div id="chipEficacia" class="chip chip-gray">Sin definir</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">Tecnovigilancia</div>
+            <div id="chipTecnovigilancia" class="chip chip-gray">Sin definir</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">Proceso involucrado</div>
+            <div id="chipProceso" class="chip chip-blue">Sin definir</div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Información general</legend>
+        <div class="form-grid-4">
+          <div class="form-group">
+            <label for="consecutivo">Consecutivo</label>
+            <input type="text" id="consecutivo" placeholder="Ej. AC-2025-001" required />
+          </div>
+          <div class="form-group">
+            <label for="fechaNoConforme">Fecha de la no conforme</label>
+            <input type="date" id="fechaNoConforme" required />
+          </div>
+          <div class="form-group">
+            <label for="tipoAccion">Tipo de acción</label>
+            <select id="tipoAccion" required>
+              <option value="">Seleccione</option>
+              <option>Correctiva</option>
+              <option>Mejora</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="solicitante">Solicitante</label>
+            <input type="text" id="solicitante" required />
+          </div>
+
+          <div class="form-group">
+            <label for="procesoInvolucrado">Proceso involucrado</label>
+            <input type="text" id="procesoInvolucrado" required />
+          </div>
+          <div class="form-group">
+            <label for="responsable">Responsable</label>
+            <input type="text" id="responsable" required />
+          </div>
+          <div class="form-group full-width">
+            <label for="descripcionSituacion">Descripción de la no conformidad real, potencial o situación a mejorar</label>
+            <textarea id="descripcionSituacion" placeholder="Describa la situación, antecedentes, impacto y por qué requiere una acción." required></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Análisis de causa</legend>
+        <div class="hint">Se deja una estructura estándar de análisis de causa. Si luego me envías la imagen exacta, te la adapto igual a tu ejemplo.</div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 70px;">#</th>
+                <th>¿Por qué?</th>
+                <th>Respuesta / hallazgo</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyCausas"></tbody>
+          </table>
+        </div>
+        <div class="row-actions">
+          <button type="button" id="btnAgregarCausa" class="btn-secondary">+ Agregar fila de causa</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Plan de acción</legend>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 60px;">#</th>
+                <th>Acción</th>
+                <th style="width: 180px;">Responsable</th>
+                <th style="width: 150px;">Fecha compromiso</th>
+                <th style="width: 160px;">Estado</th>
+                <th style="width: 90px;">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyAcciones"></tbody>
+          </table>
+        </div>
+        <div class="row-actions">
+          <button type="button" id="btnAgregarAccion" class="btn-secondary">+ Agregar acción</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Verificación del plan de acción</legend>
+        <div class="form-grid-2">
+          <div class="form-group full-width">
+            <label for="verificacionPlan">Verificación del plan de acción</label>
+            <textarea id="verificacionPlan" placeholder="Describa el seguimiento realizado, el estado real de cumplimiento y las evidencias revisadas."></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Resultados y evaluación</legend>
+        <div class="form-grid-3">
+          <div class="form-group full-width">
+            <label for="resultadosObtenidos">Resultados obtenidos</label>
+            <textarea id="resultadosObtenidos" placeholder="Describa los resultados alcanzados luego de ejecutar las acciones."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="accionEficaz">¿La acción fue eficaz?</label>
+            <select id="accionEficaz" required>
+              <option value="">Seleccione</option>
+              <option>Sí</option>
+              <option>No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="reportarTecnovigilancia">¿Hay que reportarlo ante tecnovigilancia?</label>
+            <select id="reportarTecnovigilancia" required>
+              <option value="">Seleccione</option>
+              <option>Sí</option>
+              <option>No</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Elaborado por</legend>
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label for="elaboradoNombre">Nombre</label>
+            <input type="text" id="elaboradoNombre" required />
+          </div>
+          <div class="form-group">
+            <label for="elaboradoCargo">Cargo</label>
+            <input type="text" id="elaboradoCargo" required />
+          </div>
+        </div>
+        <div class="firmas-grid" style="margin-top:16px;">
+          <div class="firma-card">
+            <label>Firma de quien elabora</label>
+            <canvas id="firmaElabora" class="firma-pad"></canvas>
+            <div class="firma-actions">
+              <span class="firma-note">Firma sobre el recuadro.</span>
+              <button type="button" class="btn-danger" data-clear-signature="firmaElabora">Limpiar firma</button>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="row-actions">
+        <button type="submit" class="btn-primary btn-full">Descargar archivo editable (.html)</button>
+      </div>
+      <div class="footer-note">Este formato descarga un archivo editable en HTML con la información diligenciada.</div>
+    </form>
+  </div>
+
+  <script>
+    const DOC_CODIGO_FIJO = "SG-RE-010";
+    const DOC_VERSION_FIJA = "3";
+    const DOC_FECHA_ACTUALIZACION = "15/08/2025";
+    const PROCESO_FOOTER = "Sistema de gestión";
+    const ELABORADO_POR_FOOTER = "Director de Calidad";
+    const REVISADO_POR_FOOTER = "Directora Técnica";
+    const APROBADO_POR_FOOTER = "Gerencia General";
+
+    const tbodyCausas = document.getElementById("tbodyCausas");
+    const tbodyAcciones = document.getElementById("tbodyAcciones");
+
+    function hoyISO() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function limpiarTexto(texto) {
+      return String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^\w\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "_");
+    }
+
+    function escapeHtml(text) {
+      return String(text || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function formatearFechaVisual(fechaISO) {
+      if (!fechaISO) return "";
+      const partes = fechaISO.split("-");
+      if (partes.length !== 3) return fechaISO;
+      return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+
+    function getChipClassTipo(valor) {
+      if (valor === "Correctiva") return "chip-red";
+      if (valor === "Mejora") return "chip-green";
+      return "chip-gray";
+    }
+
+    function getChipClassEficacia(valor) {
+      if (valor === "Sí") return "chip-green";
+      if (valor === "No") return "chip-red";
+      return "chip-gray";
+    }
+
+    function getChipClassTecno(valor) {
+      if (valor === "Sí") return "chip-yellow";
+      if (valor === "No") return "chip-blue";
+      return "chip-gray";
+    }
+
+    function actualizarResumenVisual() {
+      const tipo = document.getElementById("tipoAccion").value;
+      const eficacia = document.getElementById("accionEficaz").value;
+      const tecnov = document.getElementById("reportarTecnovigilancia").value;
+      const proceso = document.getElementById("procesoInvolucrado").value;
+
+      const chipTipoAccion = document.getElementById("chipTipoAccion");
+      const chipEficacia = document.getElementById("chipEficacia");
+      const chipTecnovigilancia = document.getElementById("chipTecnovigilancia");
+      const chipProceso = document.getElementById("chipProceso");
+
+      chipTipoAccion.className = `chip ${getChipClassTipo(tipo)}`;
+      chipTipoAccion.textContent = tipo || "Sin definir";
+
+      chipEficacia.className = `chip ${getChipClassEficacia(eficacia)}`;
+      chipEficacia.textContent = eficacia || "Sin definir";
+
+      chipTecnovigilancia.className = `chip ${getChipClassTecno(tecnov)}`;
+      chipTecnovigilancia.textContent = tecnov || "Sin definir";
+
+      chipProceso.className = "chip chip-blue";
+      chipProceso.textContent = proceso || "Sin definir";
+    }
+
+    function agregarFilaCausa(pregunta = "", respuesta = "") {
+      const idx = document.querySelectorAll(".causa-row").length + 1;
+      const tr = document.createElement("tr");
+      tr.className = "causa-row";
+      tr.innerHTML = `
+        <td class="causa-index">${idx}</td>
+        <td><input type="text" class="input-pregunta-causa" value="${pregunta}" placeholder="Ej. ¿Por qué ocurrió?" /></td>
+        <td><textarea class="input-respuesta-causa" placeholder="Respuesta o hallazgo">${respuesta}</textarea></td>
+      `;
+      tbodyCausas.appendChild(tr);
+    }
+
+    function obtenerCausas() {
+      return Array.from(document.querySelectorAll(".causa-row")).map(row => ({
+        numero: row.querySelector(".causa-index").textContent,
+        pregunta: row.querySelector(".input-pregunta-causa").value.trim(),
+        respuesta: row.querySelector(".input-respuesta-causa").value.trim()
+      })).filter(item => item.pregunta || item.respuesta);
+    }
+
+    function agregarFilaAccion(data = {}) {
+      const index = document.querySelectorAll(".accion-row").length + 1;
+      const tr = document.createElement("tr");
+      tr.className = "accion-row";
+      tr.innerHTML = `
+        <td class="accion-index">${index}</td>
+        <td><textarea class="input-accion" placeholder="Describa la acción">${data.accion || ""}</textarea></td>
+        <td><input type="text" class="input-responsable" value="${data.responsable || ""}" placeholder="Responsable" /></td>
+        <td><input type="date" class="input-fecha-compromiso" value="${data.fecha || ""}" /></td>
+        <td>
+          <select class="input-estado-accion">
+            <option value="">Seleccione</option>
+            <option ${data.estado === "Pendiente" ? "selected" : ""}>Pendiente</option>
+            <option ${data.estado === "En proceso" ? "selected" : ""}>En proceso</option>
+            <option ${data.estado === "Completada" ? "selected" : ""}>Completada</option>
+          </select>
+        </td>
+        <td><button type="button" class="btn-danger btn-eliminar-accion">Eliminar</button></td>
+      `;
+
+      tr.querySelector(".btn-eliminar-accion").addEventListener("click", () => {
+        tr.remove();
+        renumerarAcciones();
+      });
+
+      tbodyAcciones.appendChild(tr);
+    }
+
+    function renumerarAcciones() {
+      document.querySelectorAll(".accion-row").forEach((row, index) => {
+        row.querySelector(".accion-index").textContent = index + 1;
+      });
+    }
+
+    function obtenerAcciones() {
+      return Array.from(document.querySelectorAll(".accion-row")).map(row => ({
+        numero: row.querySelector(".accion-index").textContent,
+        accion: row.querySelector(".input-accion").value.trim(),
+        responsable: row.querySelector(".input-responsable").value.trim(),
+        fecha: row.querySelector(".input-fecha-compromiso").value.trim(),
+        estado: row.querySelector(".input-estado-accion").value.trim()
+      })).filter(item => item.accion || item.responsable || item.fecha || item.estado);
+    }
+
+    function resizeSignatureCanvas(canvas) {
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      const rect = canvas.getBoundingClientRect();
+      const oldData = canvas.toDataURL();
+      canvas.width = rect.width * ratio;
+      canvas.height = rect.height * ratio;
+      const ctx = canvas.getContext("2d");
+      ctx.scale(ratio, ratio);
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#0f2740";
+      if (oldData && oldData !== "data:,") {
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        img.src = oldData;
+      }
+    }
+
+    function setupSignaturePad(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext("2d");
+      let drawing = false;
+
+      function getPos(evt) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = evt.touches?.[0]?.clientX ?? evt.clientX;
+        const clientY = evt.touches?.[0]?.clientY ?? evt.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+      }
+
+      function start(evt) {
+        evt.preventDefault();
+        drawing = true;
+        const pos = getPos(evt);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+      }
+
+      function move(evt) {
+        if (!drawing) return;
+        evt.preventDefault();
+        const pos = getPos(evt);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      }
+
+      function stop() { drawing = false; }
+
+      canvas.addEventListener("mousedown", start);
+      canvas.addEventListener("mousemove", move);
+      canvas.addEventListener("mouseup", stop);
+      canvas.addEventListener("mouseleave", stop);
+      canvas.addEventListener("touchstart", start, { passive: false });
+      canvas.addEventListener("touchmove", move, { passive: false });
+      canvas.addEventListener("touchend", stop);
+
+      return { canvas, ctx };
+    }
+
+    function canvasVacio(canvas) {
+      const ctx = canvas.getContext("2d");
+      const image = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      for (let i = 3; i < image.length; i += 4) {
+        if (image[i] !== 0) return false;
+      }
+      return true;
+    }
+
+    function validarFormulario() {
+      if (!obtenerAcciones().length) {
+        alert("Debes agregar al menos una acción en el plan de acción.");
+        return false;
+      }
+      if (canvasVacio(firmaElaboraPad.canvas)) {
+        alert("Debes capturar la firma de quien elabora antes de descargar el archivo.");
+        return false;
+      }
+      return true;
+    }
+
+    function generarHtmlEditable(dataDoc, causas, acciones, firmaDataUrl) {
+      const causasFilas = causas.length ? causas.map(c => `
+        <tr>
+          <td>${escapeHtml(c.numero)}</td>
+          <td>${escapeHtml(c.pregunta)}</td>
+          <td>${escapeHtml(c.respuesta)}</td>
+        </tr>`).join("") : `<tr><td></td><td></td><td></td></tr>`;
+
+      const accionesFilas = acciones.length ? acciones.map(a => `
+        <tr>
+          <td>${escapeHtml(a.numero)}</td>
+          <td>${escapeHtml(a.accion)}</td>
+          <td>${escapeHtml(a.responsable)}</td>
+          <td>${escapeHtml(formatearFechaVisual(a.fecha))}</td>
+          <td>${escapeHtml(a.estado)}</td>
+        </tr>`).join("") : `<tr><td></td><td></td><td></td><td></td><td></td></tr>`;
+
+      return `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ACCIONES CORRECTIVAS Y DE MEJORA</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 24px; color: #000; }
+.wrapper { max-width: 1100px; margin: 0 auto; }
+.header { border: 1px solid #000; display: grid; grid-template-columns: 120px 1fr 220px; min-height: 90px; }
+.header > div { border-right: 1px solid #000; }
+.header > div:last-child { border-right: none; }
+.logo { display:flex; align-items:center; justify-content:center; padding:8px; }
+.logo img { max-width: 100px; max-height: 60px; }
+.title { display:flex; align-items:center; justify-content:center; text-align:center; font-weight:bold; font-size:18px; }
+.meta { display:grid; grid-template-rows: repeat(3, 1fr); }
+.meta div { border-bottom:1px solid #000; display:grid; grid-template-columns: 1fr 80px; }
+.meta div:last-child { border-bottom:none; }
+.meta span { padding:6px; }
+.meta span:first-child { font-weight:bold; border-right:1px solid #000; }
+.section { margin-top: 18px; }
+.section h3 { margin: 0 0 8px; font-size: 15px; }
+.table { width:100%; border-collapse: collapse; }
+.table th, .table td { border:1px solid #000; padding:8px; vertical-align: top; }
+.table th { background:#f0f0f0; }
+.box { border:1px solid #000; padding:10px; min-height:42px; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.grid4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; }
+.label { font-weight:bold; margin-bottom:4px; }
+.small { font-size:12px; }
+.signature { max-width:260px; }
+.signature img { max-width: 240px; max-height: 120px; display:block; }
+.footer { margin-top:30px; border-top:1px solid #000; padding-top:8px; font-size:12px; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <div class="logo"><div>LOGO</div></div>
+    <div class="title">ACCIONES CORRECTIVAS Y DE MEJORA</div>
+    <div class="meta">
+      <div><span>Fecha de actualización</span><span>${escapeHtml(DOC_FECHA_ACTUALIZACION)}</span></div>
+      <div><span>Código</span><span>${escapeHtml(DOC_CODIGO_FIJO)}</span></div>
+      <div><span>Versión</span><span>${escapeHtml(DOC_VERSION_FIJA)}</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="grid4">
+      <div><div class="label">Consecutivo</div><div class="box">${escapeHtml(dataDoc.consecutivo)}</div></div>
+      <div><div class="label">Fecha de la no conforme</div><div class="box">${escapeHtml(formatearFechaVisual(dataDoc.fechaNoConforme))}</div></div>
+      <div><div class="label">Tipo de acción</div><div class="box">${escapeHtml(dataDoc.tipoAccion)}</div></div>
+      <div><div class="label">Solicitante</div><div class="box">${escapeHtml(dataDoc.solicitante)}</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="grid2">
+      <div><div class="label">Proceso involucrado</div><div class="box">${escapeHtml(dataDoc.procesoInvolucrado)}</div></div>
+      <div><div class="label">Responsable</div><div class="box">${escapeHtml(dataDoc.responsable)}</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="label">Descripción de la no conformidad real, potencial o situación a mejorar</div>
+    <div class="box">${escapeHtml(dataDoc.descripcionSituacion)}</div>
+  </div>
+
+  <div class="section">
+    <h3>Análisis de causa</h3>
+    <table class="table">
+      <thead>
+        <tr><th>#</th><th>¿Por qué?</th><th>Respuesta / hallazgo</th></tr>
+      </thead>
+      <tbody>${causasFilas}</tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>Plan de acción</h3>
+    <table class="table">
+      <thead>
+        <tr><th>#</th><th>Acción</th><th>Responsable</th><th>Fecha compromiso</th><th>Estado</th></tr>
+      </thead>
+      <tbody>${accionesFilas}</tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="label">Verificación del plan de acción</div>
+    <div class="box">${escapeHtml(dataDoc.verificacionPlan)}</div>
+  </div>
+
+  <div class="section">
+    <div class="label">Resultados obtenidos</div>
+    <div class="box">${escapeHtml(dataDoc.resultadosObtenidos)}</div>
+  </div>
+
+  <div class="section">
+    <div class="grid2">
+      <div><div class="label">¿La acción fue eficaz?</div><div class="box">${escapeHtml(dataDoc.accionEficaz)}</div></div>
+      <div><div class="label">¿Hay que reportarlo ante tecnovigilancia?</div><div class="box">${escapeHtml(dataDoc.reportarTecnovigilancia)}</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Elaborado por</h3>
+    <div class="grid3">
+      <div><div class="label">Nombre</div><div class="box">${escapeHtml(dataDoc.elaboradoNombre)}</div></div>
+      <div><div class="label">Cargo</div><div class="box">${escapeHtml(dataDoc.elaboradoCargo)}</div></div>
+      <div class="signature">
+        <div class="label">Firma</div>
+        <div class="box">${firmaDataUrl ? `<img src="${firmaDataUrl}" alt="Firma" />` : ""}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>Copia controlada: Sí | Proceso: ${escapeHtml(PROCESO_FOOTER)}</div>
+    <div>Elaborado por: ${escapeHtml(ELABORADO_POR_FOOTER)} | Revisado por: ${escapeHtml(REVISADO_POR_FOOTER)} | Aprobado por: ${escapeHtml(APROBADO_POR_FOOTER)}</div>
+  </div>
+</div>
+</body>
+</html>`;
+    }
+
+    const firmaElaboraPad = setupSignaturePad("firmaElabora");
+
+    function ajustarFirmas() {
+      resizeSignatureCanvas(firmaElaboraPad.canvas);
+    }
+
+    document.getElementById("btnAgregarCausa").addEventListener("click", () => agregarFilaCausa());
+    document.getElementById("btnAgregarAccion").addEventListener("click", () => agregarFilaAccion());
+
+    document.querySelectorAll("[data-clear-signature]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const target = btn.getAttribute("data-clear-signature");
+        const canvas = document.getElementById(target);
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      });
+    });
+
+    ["tipoAccion", "accionEficaz", "reportarTecnovigilancia", "procesoInvolucrado"].forEach(id => {
+      document.getElementById(id).addEventListener("change", actualizarResumenVisual);
+      document.getElementById(id).addEventListener("input", actualizarResumenVisual);
+    });
+
+    document.getElementById("fechaNoConforme").value = hoyISO();
+    agregarFilaCausa("¿Por qué ocurrió?", "");
+    agregarFilaCausa("¿Por qué sucedió la causa anterior?", "");
+    agregarFilaCausa("¿Por qué no se detectó o previno?", "");
+    agregarFilaAccion();
+    ajustarFirmas();
+    actualizarResumenVisual();
+    window.addEventListener("resize", ajustarFirmas);
+
+    document.getElementById("formAcciones").addEventListener("submit", function(evt) {
+      evt.preventDefault();
+      if (!validarFormulario()) return;
+
+      const dataDoc = {
+        consecutivo: document.getElementById("consecutivo").value.trim(),
+        fechaNoConforme: document.getElementById("fechaNoConforme").value,
+        tipoAccion: document.getElementById("tipoAccion").value,
+        solicitante: document.getElementById("solicitante").value.trim(),
+        procesoInvolucrado: document.getElementById("procesoInvolucrado").value.trim(),
+        responsable: document.getElementById("responsable").value.trim(),
+        descripcionSituacion: document.getElementById("descripcionSituacion").value.trim(),
+        verificacionPlan: document.getElementById("verificacionPlan").value.trim(),
+        resultadosObtenidos: document.getElementById("resultadosObtenidos").value.trim(),
+        accionEficaz: document.getElementById("accionEficaz").value,
+        reportarTecnovigilancia: document.getElementById("reportarTecnovigilancia").value,
+        elaboradoNombre: document.getElementById("elaboradoNombre").value.trim(),
+        elaboradoCargo: document.getElementById("elaboradoCargo").value.trim()
+      };
+
+      const causas = obtenerCausas();
+      const acciones = obtenerAcciones();
+      const firmaDataUrl = firmaElaboraPad.canvas.toDataURL("image/png");
+      const contenidoHtml = generarHtmlEditable(dataDoc, causas, acciones, firmaDataUrl);
+
+      const blob = new Blob([contenidoHtml], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${DOC_CODIGO_FIJO}_V${DOC_VERSION_FIJA}_${limpiarTexto(dataDoc.consecutivo || "ACCION")}_Acciones_Correctivas_y_de_Mejora.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
